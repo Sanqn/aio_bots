@@ -33,6 +33,20 @@ async def start_admin_loader(message: types.Message):
         await message.reply('Load your photo of food')
 
 
+#  Out of state
+
+# @dp.message_handler(state='*', commands='cancel')
+# @dp.message_handler(Text(equals='cancel', ignore_case=True), state='*')
+async def cansel_load(message: types.Message, state: FSMContext):
+    if message.from_user.id == ID:
+        current_state = await state.get_state()
+        if current_state is None:
+            return
+        # Cancel state and inform user about it
+        await state.finish()
+        await message.reply('load canceled')
+
+
 #  Catch the first dict
 # @dp.message_handler(content_types=['photo'], state=FormAdmin.photo)
 async def load_photo(message: types.Message, state: FSMContext):
@@ -71,28 +85,14 @@ async def load_price(message: types.Message, state: FSMContext):
             await state.finish()
 
 
-#  Out of state
-
-# @dp.message_handler(state='*', commands='cancel')
-# @dp.message_handler(Text(equals='cancel', ignore_case=True), state='*')
-async def cansel_load(message: types.Message, state: FSMContext):
-    if message.from_user.id == ID:
-        current_state = await state.get_state()
-        if current_state is None:
-            return
-        # Cancel state and inform user about it
-        await state.finish()
-        await message.reply('load canceled')
-
-
 # ==================== Register all handlers for start in main file ======================
 def register_admin_handlers(dp: Dispatcher):
     dp.register_message_handler(is_moderator, commands='moderator', is_chat_admin=True)
+    dp.register_message_handler(cansel_load, state='*', commands='cancel')
+    dp.register_message_handler(cansel_load, Text(equals='cancel', ignore_case=True), state='*')
     dp.register_message_handler(start_admin_loader, commands='load', state=None)
     dp.register_message_handler(load_photo, content_types=['photo'], state=FormAdmin.photo)
     dp.register_message_handler(load_name, state=FormAdmin.name)
     dp.register_message_handler(load_description, state=FormAdmin.description)
     dp.register_message_handler(load_price, state=FormAdmin.price)
-    dp.register_message_handler(cansel_load, state='*', commands='cancel')
-    dp.register_message_handler(cansel_load, Text(equals='cancel', ignore_case=True), state='*')
 

@@ -6,7 +6,7 @@ __pycache__/
 db.sqlite3
 # C extensions
 *.so
-*.ini
+
 
 # Distribution / packaging
 .Python
@@ -130,3 +130,8 @@ docs/.build
 
 # pytorch checkpoint
 *.pt
+cuss.txt
+cuss1.json
+file_for_te.py
+one_file_bot_for_start.py
+config.ini
