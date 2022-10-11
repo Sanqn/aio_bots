@@ -4,6 +4,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from create_connection_file import dp, bot
 from aiogram.dispatcher.filters import Text
 from keyboards.keyboard_admin import kb_admin
+from data_base import db
 
 ID = None
 
@@ -53,8 +54,8 @@ async def load_photo(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['photo'] = message.photo[0].file_id
-            await FormAdmin.next()
-            await message.reply('Input name food')
+        await FormAdmin.next()
+        await message.reply('Input name food')
 
 
 # @dp.message_handler(state=FormAdmin.name)
@@ -62,8 +63,8 @@ async def load_name(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['name'] = message.text
-            await FormAdmin.next()
-            await message.reply('Input description')
+        await FormAdmin.next()
+        await message.reply('Input description')
 
 
 # @dp.message_handler(state=FormAdmin.description)
@@ -71,8 +72,8 @@ async def load_description(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['description'] = message.text
-            await FormAdmin.next()
-            await message.reply('Input price')
+        await FormAdmin.next()
+        await message.reply('Input price')
 
 
 # @dp.message_handler(state=FormAdmin.price)
@@ -80,9 +81,15 @@ async def load_price(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
         async with state.proxy() as data:
             data['price'] = float(message.text)
-        async with state.proxy() as data:
-            await message.reply(str(data))
-            await state.finish()
+        # async with state.proxy() as data:
+        #     print(data)
+        #     a = await state.get_data()
+        #     print(a.get('name'))
+        #     print(a.get('description'))
+        #     print(a.get('price'))
+        #     print(a.get('photo'))
+        await db.load_command_menu_db(state)
+        await state.finish()
 
 
 # ==================== Register all handlers for start in main file ======================
@@ -95,4 +102,3 @@ def register_admin_handlers(dp: Dispatcher):
     dp.register_message_handler(load_name, state=FormAdmin.name)
     dp.register_message_handler(load_description, state=FormAdmin.description)
     dp.register_message_handler(load_price, state=FormAdmin.price)
-

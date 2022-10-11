@@ -1,6 +1,7 @@
 from aiogram import types, Dispatcher
 from create_connection_file import dp, bot
 from keyboards.keyboard_client import kb_client
+from data_base import db
 
 
 # ==================== Client part ======================
@@ -28,6 +29,12 @@ async def time_worl_commands(message: types.Message):
     await bot.send_message(message.from_user.id, "We work from 4 to 7 o'clock, seven days a week")
 
 
+# @dp.message_handler(lambda message: message.text in ['menu'])
+# @dp.message_handler(commands=['menu'])
+async def push_menu(message: types.Message):
+    await db.load_menu_from_db(message)
+
+
 # ==================== Register all handlers for start in main file ======================
 def register_client_handlers(dp: Dispatcher):
     # lambda message - invokes the command without /
@@ -37,3 +44,5 @@ def register_client_handlers(dp: Dispatcher):
     dp.register_message_handler(location_command, commands=['location'])
     dp.register_message_handler(time_worl_commands, lambda message: message.text in ['time_work'])
     dp.register_message_handler(time_worl_commands, commands=['time_work'])
+    dp.register_message_handler(push_menu, lambda message: message.text in ['menu'])
+    dp.register_message_handler(push_menu, commands=['menu'])
