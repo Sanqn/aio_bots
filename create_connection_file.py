@@ -9,5 +9,5 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 storage = MemoryStorage()
-bot = Bot(os.getenv('TOKEN'))
+bot = Bot(token=os.getenv('TOKEN'))
 dp = Dispatcher(bot, storage=storage)
