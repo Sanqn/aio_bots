@@ -10,7 +10,7 @@ config = configparser.ConfigParser()
 config.read("./config.ini")
 list_answers = config['list_answers']['list_answers']
 list_answers = list_answers.split(',, ')
-print(list_answers)
+
 
 
 # ==================== Message part ======================

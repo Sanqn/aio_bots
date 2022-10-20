@@ -52,3 +52,13 @@ async def load_menu_from_db(message):
         # print('======================', rez, type(rez))
         # print(rez[1], rez[2], rez[3])
         await bot.send_photo(message.from_user.id, rez[1], f'{rez[2]}\nDescription - {rez[3]}\nPrice - {rez[-1]}')
+
+
+async def menu_for_delete():
+    return cursor.execute("SELECT * FROM menu").fetchall()
+
+
+async def delete_menu(data):
+    cursor.execute("DELETE FROM menu WHERE name == ?", (data,))
+    con.commit()
+

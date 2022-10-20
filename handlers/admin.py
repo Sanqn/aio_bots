@@ -5,16 +5,17 @@ from create_connection_file import dp, bot
 from aiogram.dispatcher.filters import Text
 from keyboards.keyboard_admin import kb_admin
 from data_base import db
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 ID = None
 
 
 # States
 class FormAdmin(StatesGroup):
-    photo = State()  # Will be represented in storage as 'Form:name'
+    photo = State()  # Will be represented in storage as 'Form:photo'
     name = State()  # Will be represented in storage as 'Form:name'
-    description = State()  # Will be represented in storage as 'Form:age'
-    price = State()  # Will be represented in storage as 'Form:gender'
+    description = State()  # Will be represented in storage as 'Form:description'
+    price = State()  # Will be represented in storage as 'Form:price'
 
 
 #  Get id moderator
@@ -92,6 +93,24 @@ async def load_price(message: types.Message, state: FSMContext):
         await state.finish()
 
 
+# @dp.message_handler(commands=['delete'])
+async def go_delete_menu(message: types.Message):
+    if message.from_user.id == ID:
+        delete_menu_all = await db.menu_for_delete()
+        for name_menu in delete_menu_all:
+            await bot.send_photo(message.from_user.id, name_menu[1],
+                                 f'{name_menu[2]}\nDescription - {name_menu[3]}')
+            await bot.send_message(message.from_user.id, text='^^^^', reply_markup=InlineKeyboardMarkup(). \
+                                   add(
+                InlineKeyboardButton(text=f'delete {name_menu[2]}', callback_data=f'delete {name_menu[2]}')))
+
+
+@dp.callback_query_handler(lambda x: x.data and x.data.startswith('delete '))
+async def delete_menu(callback: types.CallbackQuery):
+    await db.delete_menu(callback.data.replace('delete ', ''))
+    await callback.answer(f"Position {callback.data.replace('delete ', '')} deleted", show_alert=True)
+
+
 # ==================== Register all handlers for start in main file ======================
 def register_admin_handlers(dp: Dispatcher):
     dp.register_message_handler(is_moderator, commands='moderator', is_chat_admin=True)
@@ -102,3 +121,4 @@ def register_admin_handlers(dp: Dispatcher):
     dp.register_message_handler(load_name, state=FormAdmin.name)
     dp.register_message_handler(load_description, state=FormAdmin.description)
     dp.register_message_handler(load_price, state=FormAdmin.price)
+    dp.register_message_handler(go_delete_menu, commands=['delete'])
